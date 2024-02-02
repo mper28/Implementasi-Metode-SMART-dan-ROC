@@ -1,0 +1,62 @@
+ <option value="NEW">NEW</option>
+                                            <option value="PROCCESS">PROCCESS</option>
+                                            <option value="PENDDING">PENDDING</option>
+                                            <option value="CANCEL">CANCEL</option>
+                                            <option value="DONE">DONE</option>
+                                            <option value="DELETE">DELETE</option>
+
+<div class="row">
+            <div class="col-md-8 form-group">
+                <label for="">Status:</label>
+                <select name="status" class="form-control" required="true">
+                    <option value="">~ Pilih Status Ticket ~</option>
+                    <option value="NEW">NEW</option>
+                    <option value="PROCCESS">PROCCESS</option>
+                    <option value="PENDDING">PENDDING</option>
+                    <option value="CANCEL">CANCEL</option>
+                    <option value="DONE">DONE</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+            </div>
+        </div>
+
+<div class="modal-body">                    
+                                    <div class="row">
+                                        <div class="col-md-8 form-group">
+                                            <label for="">Status:</label>
+                                            <select name="status" class="form-control" required="true">
+                                                <option value="<?=$val['status_ticket'];?>">SELECTED : <?=$val['status_ticket'];?></option>
+                                                <option value="NEW">NEW</option>
+                                                <option value="PROCCESS">PROCCESS</option>
+                                                <option value="PENDDING">PENDDING</option>
+                                                <option value="CANCEL">CANCEL</option>
+                                                <option value="DONE">DONE</option>
+                                                <option value="DELETE">DELETE</option>
+                                            </select>
+                                            <input type="hidden" name="id" value="<?=$val['tt_id'];?>">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" name="update" class="btn btn-primary">Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                <?php } ?>
+            </table>
+        </div>
+    </div>
+</div>
+
+<?php
+    if(isset($_POST['update']))
+    {
+        $a = Q_mres($_POST['status']);
+        $b = Q_mres($_POST['id']);
+
+        $sql = "UPDATE tbl_ticket SET tt_status='$a' WHERE tt_id='$b'";
+        if(Q_execute($sql)){
+            redirect_to("ticket-list.php");
+        }
+    }

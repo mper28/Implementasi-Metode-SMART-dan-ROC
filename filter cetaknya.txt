@@ -1,0 +1,66 @@
+<?php
+// Mengambil nilai opsi cetak yang dipilih
+$cetak_opsi = $_POST['cetak_opsi'];
+
+// Menghubungkan ke database dan melakukan query sesuai opsi cetak
+$koneksi = mysqli_connect("localhost", "username", "password", "nama_database"); // Ganti dengan informasi database yang sesuai
+$result = null;
+
+if ($cetak_opsi === "status_ticket") {
+    // Query untuk mengambil data berdasarkan status_ticket
+    $status_ticket = $_POST['status_ticket'];
+
+    // Menjalankan query
+    $query = "SELECT * FROM data_ticket WHERE status_ticket = '$status_ticket'";
+    $result = mysqli_query($koneksi, $query);
+} elseif ($cetak_opsi === "data_karyawan") {
+    // Query untuk mengambil data berdasarkan data_karyawan
+    $karyawan_id = $_POST['karyawan_id'];
+
+    // Menjalankan query
+    $query = "SELECT * FROM data_ticket WHERE id_karyawan = '$karyawan_id'";
+    $result = mysqli_query($koneksi, $query);
+}
+
+// Membuat file PDF menggunakan library TCPDF
+require_once('tcpdf/tcpdf.php');
+$pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8');
+$pdf->SetCreator(PDF_CREATOR);
+$pdf->SetAuthor('Your Name');
+$pdf->SetTitle('Data Cetak');
+$pdf->SetMargins(10, 10, 10);
+$pdf->SetFont('helvetica', '', 12);
+$pdf->AddPage();
+
+// Header tabel
+$pdf->Cell(10, 10, 'No', 1, 0, 'C');
+$pdf->Cell(30, 10, 'No Ticket', 1, 0, 'C');
+$pdf->Cell(40, 10, 'Alamat Gangguan', 1, 0, 'C');
+$pdf->Cell(40, 10, 'Nama Pelanggan', 1, 0, 'C');
+$pdf->Cell(30, 10, 'No. Internet', 1, 0, 'C');
+$pdf->Cell(30, 10, 'Tanggal', 1, 0, 'C');
+$pdf->Cell(40, 10, 'Jenis Gangguan', 1, 0, 'C');
+$pdf->Cell(50, 10, 'Deskripsi', 1, 0, 'C');
+$pdf->Cell(30, 10, 'Hasil', 1, 0, 'C');
+$pdf->Cell(30, 10, 'Keterangan', 1, 0, 'C');
+$pdf->Cell(40, 10, 'Karyawan Teknisi', 1, 1, 'C');
+
+// Data tabel
+$no = 1;
+while ($row = mysqli_fetch_assoc($result)) {
+    $pdf->Cell(10, 10, $no, 1, 0, 'C');
+    $pdf->Cell(30, 10, $row['no_ticket'], 1, 0, 'C');
+    $pdf->Cell(40, 10, $row['alamat'], 1, 0, 'C');
+    $pdf->Cell(40, 10, $row['nama_pelanggan'], 1, 0, 'C');
+    $pdf->Cell(30, 10, $row['no_internet'], 1, 0, 'C');
+    $pdf->Cell(30, 10, $row['tanggal'], 1, 0, 'C');
+    $pdf->Cell(40, 10, $row['jenis_gangguan'], 1, 0, 'C');
+    $pdf->Cell(50, 10, $row['deskripsi'], 1, 0, 'C');
+    $pdf->Cell(30, 10, $row['hasil'], 1, 0, 'C');
+    $pdf->Cell(30, 10, $row['keterangan'], 1, 0, 'C');
+    $pdf->Cell(40, 10, $row['karyawan_teknisi'], 1, 1, 'C');
+    $no++;
+}
+
+// Output file PDF
+$pdf->Output('data_cetak.pdf', 'I');
